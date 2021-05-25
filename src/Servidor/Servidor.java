@@ -1,11 +1,6 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+package Servidor;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -31,6 +26,7 @@ public class Servidor extends Thread{
             is  = con.getInputStream();
             isr = new InputStreamReader(is);
             bfr = new BufferedReader(isr);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,8 +36,8 @@ public class Servidor extends Thread{
     public void run(){
         System.out.println("chegou");
         try{
-            //Verifica as mensagens para serem enviadas ao client side
             String msg;
+            //Verifica as mensagens para serem enviadas ao client side
             OutputStream ou =  this.con.getOutputStream();
             Writer ouw = new OutputStreamWriter(ou);
             BufferedWriter bfw = new BufferedWriter(ouw);
@@ -61,6 +57,30 @@ public class Servidor extends Thread{
     }
 
 
+    private static Object getObjectFromByte(byte[] objectAsByte) {
+        Object obj = null;
+        ByteArrayInputStream bis = null;
+        ObjectInputStream ois = null;
+        try {
+            bis = new ByteArrayInputStream(objectAsByte);
+            ois = new ObjectInputStream(bis);
+            obj = ois.readObject();
+
+            bis.close();
+            ois.close();
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return obj;
+
+    }
+
      // Método usado para enviar mensagem para todos os clientes
     public void enviaTodos(BufferedWriter bwSaida, String msg) throws  IOException
     {
@@ -79,19 +99,19 @@ public class Servidor extends Thread{
     public static void main(String []args) {
         try{
             //Cria os objetos necessários para instânciar o servidor
-            JLabel lblMensagem = new JLabel("Porta do Servidor:");
+            JLabel lblMensagem = new JLabel("Porta do Servidor.Servidor:");
             JTextField txtPorta = new JTextField("4000");
             Object[] texts = {lblMensagem, txtPorta };
             JOptionPane.showMessageDialog(null, texts);
             servidor = new ServerSocket(Integer.parseInt(txtPorta.getText()));
             usuarios = new ArrayList<BufferedWriter>();
-            JOptionPane.showMessageDialog(null,"Servidor ativo na porta: "+ txtPorta.getText());
+            JOptionPane.showMessageDialog(null,"Servidor.Servidor ativo na porta: "+ txtPorta.getText());
 
             //Esperando conexão, ao estabelecer, inicia uma nova thread no servidor
             while(true){
                 System.out.println("Aguardando conexão...");
                 Socket con = servidor.accept();
-                System.out.println("Cliente conectado...");
+                System.out.println("Cliente.Cliente conectado...");
                 Thread t = new Servidor(con);
                 t.start();
             }
@@ -99,6 +119,7 @@ public class Servidor extends Thread{
         }catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
 }
